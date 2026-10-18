@@ -20,17 +20,27 @@
 
 ## Install
 
-<p align="center">
-  <a href="../../releases/latest"><img src="https://img.shields.io/badge/Download_for_macOS-.dmg-1F9D6B?style=for-the-badge&logo=apple&logoColor=white" alt="Download for macOS" height="44"></a>
-</p>
+Paste this into Terminal:
 
-| | |
-|:---:|---|
-| **1** | Open `ScreenshotCleaner.dmg` and drag the app into **Applications** |
-| **2** | Launch it. A stack of cards appears in your menu bar |
-| **3** | Click it, pick an age, and hit **Move to Trash** |
+```sh
+curl -fsSL https://raw.githubusercontent.com/WorldOccupier/screenshot-cleaner/main/install.sh | sh
+```
 
-Signed and notarized by Apple, so it opens without warnings.
+It downloads the latest release into **Applications** and opens it. A stack of cards appears in your menu bar; click it, pick an age, and hit **Move to Trash**. Run it again to update. Works on Apple Silicon and Intel, macOS 14 or later.
+
+<details>
+<summary><b>Prefer to download it yourself?</b></summary>
+
+<br>
+
+The app isn't notarized by Apple yet, so macOS blocks it when it's downloaded in a browser.
+
+1. Download [`ScreenshotCleaner.zip`](../../releases/latest/download/ScreenshotCleaner.zip), unzip it, and drag the app into **Applications**.
+2. Open it, and click **Done** on the warning.
+3. Go to **System Settings › Privacy & Security**, scroll down, and click **Open Anyway**.
+
+You only need to do this once. The install script avoids it because macOS only checks files downloaded through a browser.
+</details>
 
 <details>
 <summary><b>Build from source</b></summary>
@@ -44,7 +54,7 @@ Requires Xcode 16.
 swift test
 ```
 
-`release.sh` signs, notarizes and staples the DMG.
+`zip-release.sh` builds the zip that `install.sh` downloads. `release.sh` signs, notarizes and staples a DMG, once Apple notarization is available.
 </details>
 
 ## MCP server for agents

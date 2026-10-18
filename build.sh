@@ -3,12 +3,14 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-swift build -c release
+# Universal binary, so it runs on Apple Silicon and Intel Macs.
+swift build -c release --arch arm64 --arch x86_64
+BIN=.build/apple/Products/Release
 APP="build/Screenshot Cleaner.app"
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
-cp .build/release/ScreenshotCleaner "$APP/Contents/MacOS/"
-cp .build/release/screenshot-cleaner-mcp "$APP/Contents/MacOS/"
+cp $BIN/ScreenshotCleaner "$APP/Contents/MacOS/"
+cp $BIN/screenshot-cleaner-mcp "$APP/Contents/MacOS/"
 cp Resources/AppIcon.icns "$APP/Contents/Resources/"
 
 cat > "$APP/Contents/Info.plist" <<'PLIST'
