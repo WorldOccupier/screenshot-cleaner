@@ -1,6 +1,14 @@
-# Screenshot Cleaner
+<p align="center"><img src="docs/icon.png" width="128" alt="Screenshot Cleaner icon"></p>
 
-A tiny macOS menu bar app that clears old screenshots off your Desktop.
+<h1 align="center">Screenshot Cleaner</h1>
+
+<p align="center">A tiny macOS menu bar app that clears old screenshots off your Desktop.</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/macOS-14%2B-111?logo=apple&logoColor=white" alt="macOS 14+">
+  <img src="https://img.shields.io/badge/Swift-6-F05138?logo=swift&logoColor=white" alt="Swift 6">
+  <img src="https://img.shields.io/badge/MCP-ready-1F9D6B" alt="MCP ready">
+</p>
 
 <p align="center"><img src="docs/screenshot.png" width="412" alt="Screenshot Cleaner popover"></p>
 
@@ -9,9 +17,42 @@ A tiny macOS menu bar app that clears old screenshots off your Desktop.
 - **Move to Trash** in one click. Files are never deleted outright, so anything can be restored.
 - **Auto-clean** once a day, if you turn it on. It never touches screenshots from the last 24 hours.
 
+## Install
+
+<p align="center">
+  <a href="../../releases/latest"><img src="https://img.shields.io/badge/Download_for_macOS-.dmg-1F9D6B?style=for-the-badge&logo=apple&logoColor=white" alt="Download for macOS" height="44"></a>
+</p>
+
+| | |
+|:---:|---|
+| **1** | Open `ScreenshotCleaner.dmg` and drag the app into **Applications** |
+| **2** | Launch it. A stack of cards appears in your menu bar |
+| **3** | Click it, pick an age, and hit **Move to Trash** |
+
+Signed and notarized by Apple, so it opens without warnings.
+
+<details>
+<summary><b>Build from source</b></summary>
+
+<br>
+
+Requires Xcode 16.
+
+```sh
+./build.sh && open "build/Screenshot Cleaner.app"
+swift test
+```
+
+`release.sh` signs, notarizes and staples the DMG.
+</details>
+
 ## MCP server for agents
 
 The app bundles an [MCP](https://modelcontextprotocol.io) server so coding agents can tidy screenshots in a few tokens instead of listing and moving files themselves.
+
+```sh
+claude mcp add screenshot-cleaner -- "/Applications/Screenshot Cleaner.app/Contents/MacOS/screenshot-cleaner-mcp"
+```
 
 | Tool | Returns |
 |---|---|
@@ -19,22 +60,4 @@ The app bundles an [MCP](https://modelcontextprotocol.io) server so coding agent
 | `list_screenshots` | Date, size and name per line, oldest first, capped by `limit` |
 | `clean_screenshots` | Moves to the Trash by `older_than_days` and/or `files`; never runs without one |
 
-Same detection and safety as the app: only screenshots in the macOS screenshot folder, always to the Trash. The default age is whatever you picked in the app.
-
-```sh
-claude mcp add screenshot-cleaner -- "/Applications/Screenshot Cleaner.app/Contents/MacOS/screenshot-cleaner-mcp"
-```
-
-Other clients: run that binary as a stdio server. From source it's `.build/release/screenshot-cleaner-mcp`.
-
-## Build
-
-Requires macOS 14+ and Xcode 16 (Swift 6 toolchain).
-
-```sh
-./build.sh                         # builds "build/Screenshot Cleaner.app"
-open "build/Screenshot Cleaner.app"
-swift test                         # run the tests
-```
-
-`release.sh` signs with a Developer ID certificate, notarizes and staples a DMG for distribution.
+Same detection and safety as the app: only screenshots in the macOS screenshot folder, always to the Trash. The default age is whatever you picked in the app. Other clients can run the binary as a stdio server; from source it's `.build/release/screenshot-cleaner-mcp`.
