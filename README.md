@@ -16,6 +16,7 @@
 - **Pick an age** (any, 1 day, 1 week, 1 month) and flick through the stack to see what will go.
 - **Move to Trash** in one click. Files are never deleted outright, so anything can be restored.
 - **Auto-clean** once a day, if you turn it on. It never touches screenshots from the last 24 hours.
+- **Screen recordings** too, if you flip the Recordings switch. Off by default.
 
 ## Install
 
@@ -60,4 +61,18 @@ claude mcp add screenshot-cleaner -- "/Applications/Screenshot Cleaner.app/Conte
 | `list_screenshots` | Date, size and name per line, oldest first, capped by `limit` |
 | `clean_screenshots` | Moves to the Trash by `older_than_days` and/or `files`; never runs without one |
 
-Same detection and safety as the app: only screenshots in the macOS screenshot folder, always to the Trash. The default age is whatever you picked in the app. Other clients can run the binary as a stdio server; from source it's `.build/release/screenshot-cleaner-mcp`.
+### Token savings
+
+Measured on a test Desktop with 200 screenshots over 90 days, 5 recordings and 40 other files. Each approach counted, listed, then trashed screenshots older than 30 days. Tokens are estimated at ~4 characters per token.
+
+| Step | Agent with shell commands | MCP server |
+|---|---:|---:|
+| Count and size | ~5,400 | ~40 |
+| List | ~3,100 | ~325 |
+| Move to Trash | ~40 | ~30 |
+| Tool definitions (once per session) | 0 | ~340 |
+| **Total** | **~8,500** | **~730** |
+
+About **11× fewer tokens**. Most of the saving is the first step, where an agent reads back an `ls -la` of the whole Desktop; the server replies in one line. The gap grows with a messier Desktop. Shell matching by name and date also missed screenshots the server found through Spotlight (129 vs 132).
+
+Same detection and safety as the app: only screenshots in the macOS screenshot folder, always to the Trash. The default age, and whether recordings are included, follow what you picked in the app. Other clients can run the binary as a stdio server; from source it's `.build/release/screenshot-cleaner-mcp`.

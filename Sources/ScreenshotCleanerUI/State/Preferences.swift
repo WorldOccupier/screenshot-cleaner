@@ -6,6 +6,7 @@ struct Preferences {
     enum Key {
         static let ageDays = "ageDays"
         static let autoClean = "autoClean"
+        static let includeRecordings = "includeRecordings"
         static let lastAutoClean = "lastAutoClean"
     }
 
@@ -25,6 +26,11 @@ struct Preferences {
     var autoClean: Bool {
         get { defaults.bool(forKey: Key.autoClean) }
         nonmutating set { defaults.set(newValue, forKey: Key.autoClean) }
+    }
+
+    var includeRecordings: Bool {
+        get { defaults.bool(forKey: Key.includeRecordings) }
+        nonmutating set { defaults.set(newValue, forKey: Key.includeRecordings) }
     }
 
     var lastAutoClean: Date? {

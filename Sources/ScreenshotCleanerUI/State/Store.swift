@@ -19,6 +19,10 @@ public final class Store {
     public var autoClean: Bool {
         didSet { preferences.autoClean = autoClean }
     }
+    /// Also clean screen recordings (.mov), not just still screenshots.
+    public var includeRecordings: Bool {
+        didSet { preferences.includeRecordings = includeRecordings; lastCleaned = nil; rescan() }
+    }
 
     public var items: [Screenshot] { all.olderThan(days: ageDays, now: now()) }
     public var summary: CleanSummary {
@@ -50,6 +54,7 @@ public final class Store {
         self.remove = remove
         ageDays = preferences.ageDays
         autoClean = preferences.autoClean
+        includeRecordings = preferences.includeRecordings
     }
 
     private func startMonitoring() {
@@ -69,8 +74,9 @@ public final class Store {
         scanGeneration += 1
         let generation = scanGeneration
         let folder = folder
+        let includeRecordings = includeRecordings
         let found = await Task.detached(priority: .utility) {
-            ScreenshotScanner.scan(folder: folder)
+            ScreenshotScanner.scan(folder: folder, includeRecordings: includeRecordings)
         }.value
         guard generation == scanGeneration else { return }
         if found != all { all = found }

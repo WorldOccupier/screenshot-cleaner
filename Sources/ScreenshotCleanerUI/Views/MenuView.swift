@@ -13,7 +13,7 @@ public struct MenuView: View {
             hero
             AgePicker(days: $store.ageDays)
             CleanButton()
-            MenuFooter(autoClean: $store.autoClean)
+            MenuFooter(autoClean: $store.autoClean, includeRecordings: $store.includeRecordings)
         }
         .padding(.horizontal, 20)
         .padding(.top, 22)

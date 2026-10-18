@@ -10,12 +10,14 @@ public struct ScreenshotTools {
 
     let folder: URL
     let defaultAgeDays: Int
+    let includeRecordings: Bool
     let now: () -> Date
     let remove: Cleaner.Remover
 
-    init(folder: URL, defaultAgeDays: Int, now: @escaping () -> Date = Date.init, remove: @escaping Cleaner.Remover = Cleaner.moveToTrash) {
+    init(folder: URL, defaultAgeDays: Int, includeRecordings: Bool = false, now: @escaping () -> Date = Date.init, remove: @escaping Cleaner.Remover = Cleaner.moveToTrash) {
         self.folder = folder
         self.defaultAgeDays = defaultAgeDays
+        self.includeRecordings = includeRecordings
         self.now = now
         self.remove = remove
     }
@@ -26,7 +28,11 @@ public struct ScreenshotTools {
         let appDomain = "com.vatsa.ScreenshotCleaner"
         let defaults = Bundle.main.bundleIdentifier == appDomain ? .standard : UserDefaults(suiteName: appDomain)
         let saved = defaults?.object(forKey: "ageDays") as? Int
-        return ScreenshotTools(folder: ScreenshotScanner.defaultLocation(), defaultAgeDays: saved ?? AgeOption.default.days)
+        return ScreenshotTools(
+            folder: ScreenshotScanner.defaultLocation(),
+            defaultAgeDays: saved ?? AgeOption.default.days,
+            includeRecordings: defaults?.bool(forKey: "includeRecordings") ?? false
+        )
     }
 
     // MARK: Definitions
@@ -121,7 +127,7 @@ public struct ScreenshotTools {
         } catch {
             throw ToolError(message: "Can't read \(Report.path(folder)). Allow access in System Settings › Privacy & Security › Files and Folders for the app running this server.")
         }
-        return ScreenshotScanner.scan(folder: folder)
+        return ScreenshotScanner.scan(folder: folder, includeRecordings: includeRecordings)
     }
 }
 

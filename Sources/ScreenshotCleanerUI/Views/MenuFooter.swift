@@ -1,9 +1,10 @@
 import AppKit
 import SwiftUI
 
-/// Auto-clean switch and quit.
+/// Auto-clean and recordings switches, and quit.
 struct MenuFooter: View {
     @Binding var autoClean: Bool
+    @Binding var includeRecordings: Bool
 
     var body: some View {
         HStack {
@@ -12,6 +13,12 @@ struct MenuFooter: View {
             }
             .toggleStyle(.switch)
             .controlSize(.mini)
+            Toggle(isOn: $includeRecordings) {
+                Text("Recordings").font(.system(size: 11, weight: .medium)).foregroundStyle(.secondary)
+            }
+            .toggleStyle(.switch)
+            .controlSize(.mini)
+            .help("Also clean screen recordings")
             Spacer()
             Button { NSApp.terminate(nil) } label: {
                 Image(systemName: "power").font(.system(size: 11, weight: .semibold)).foregroundStyle(.tertiary)
