@@ -19,12 +19,6 @@ public struct MenuView: View {
         .padding(.top, 22)
         .padding(.bottom, 14)
         .frame(width: 300)
-        .background(alignment: .topTrailing) {
-            // Soft accent glow behind the stack.
-            RadialGradient(colors: [Color.accentColor.opacity(0.25), .clear], center: .topTrailing, startRadius: 0, endRadius: 240)
-                .frame(height: 220)
-                .allowsHitTesting(false)
-        }
         .onAppear { store.rescan() }
         .animation(.spring(response: 0.7, dampingFraction: 0.9), value: store.items)
     }

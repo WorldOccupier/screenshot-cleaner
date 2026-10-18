@@ -25,6 +25,8 @@ VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "$APP/Co
 DMG="build/ScreenshotCleaner-$VERSION.dmg"
 
 # Re-sign the ad-hoc build with Developer ID, hardened runtime, and a secure timestamp (all required for notarization).
+# Nested code first: the bundled MCP server, then the app around it.
+codesign --force --options runtime --timestamp --sign "$IDENTITY" "$APP/Contents/MacOS/screenshot-cleaner-mcp"
 codesign --force --options runtime --timestamp --sign "$IDENTITY" "$APP"
 codesign --verify --strict --verbose=2 "$APP"
 

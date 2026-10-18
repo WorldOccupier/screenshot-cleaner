@@ -8,6 +8,7 @@ APP="build/Screenshot Cleaner.app"
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp .build/release/ScreenshotCleaner "$APP/Contents/MacOS/"
+cp .build/release/screenshot-cleaner-mcp "$APP/Contents/MacOS/"
 cp Resources/AppIcon.icns "$APP/Contents/Resources/"
 
 cat > "$APP/Contents/Info.plist" <<'PLIST'
@@ -30,5 +31,6 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
 </plist>
 PLIST
 
+codesign --force --sign - "$APP/Contents/MacOS/screenshot-cleaner-mcp"
 codesign --force --sign - "$APP"
 echo "Built $APP"

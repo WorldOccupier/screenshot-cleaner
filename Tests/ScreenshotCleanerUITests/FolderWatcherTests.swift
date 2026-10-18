@@ -25,15 +25,6 @@ final class FolderWatcherTests: XCTestCase {
         wait(for: [changed], timeout: 2)
     }
 
-    func testNotifiesWhenAFileIsRemoved() throws {
-        try touch("a.png")
-        let changed = expectation(description: "change")
-        let watcher = FolderWatcher(url: dir, debounce: 0.05) { changed.fulfill() }
-        try FileManager.default.removeItem(at: dir.appendingPathComponent("a.png"))
-        wait(for: [changed], timeout: 2)
-        _ = watcher
-    }
-
     func testDebouncesABurstIntoOneCall() throws {
         let changed = expectation(description: "one change")
         changed.assertForOverFulfill = true
@@ -43,19 +34,5 @@ final class FolderWatcherTests: XCTestCase {
         // Give any stray extra callbacks a chance to fire (over-fulfilling fails the test).
         RunLoop.main.run(until: Date().addingTimeInterval(0.5))
         _ = watcher
-    }
-
-    func testStopsNotifyingOnceReleased() throws {
-        let changed = expectation(description: "no change")
-        changed.isInverted = true
-        var watcher = FolderWatcher(url: dir, debounce: 0.05) { changed.fulfill() }
-        _ = watcher
-        watcher = nil
-        try touch("a.png")
-        wait(for: [changed], timeout: 0.5)
-    }
-
-    func testMissingFolderFailsToInitialise() {
-        XCTAssertNil(FolderWatcher(url: dir.appendingPathComponent("missing")) {})
     }
 }

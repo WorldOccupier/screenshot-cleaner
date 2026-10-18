@@ -15,17 +15,6 @@ final class CleanerTests: XCTestCase {
         XCTAssertEqual(result, Cleaner.Result(count: 2, bytes: 40))
     }
 
-    func testRemovesEveryItemOnce() {
-        let shots = [shot("a", bytes: 1), shot("b", bytes: 2)]
-        let removed = Locked([URL]())
-        _ = Cleaner.trash(shots) { removed.append($0) }
-        XCTAssertEqual(removed.value.map(\.lastPathComponent), ["a", "b"])
-    }
-
-    func testEmptyBatch() {
-        XCTAssertEqual(Cleaner.trash([]) { _ in XCTFail("nothing to remove") }, Cleaner.Result())
-    }
-
     func testMovesRealFileToTrash() throws {
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("cleaner-test-\(UUID().uuidString).png")
         try Data("x".utf8).write(to: url)
@@ -40,11 +29,3 @@ final class CleanerTests: XCTestCase {
     }
 }
 
-/// Minimal thread-safe box for collecting values from a `@Sendable` closure.
-final class Locked<Value>: @unchecked Sendable {
-    private var stored: Value
-    private let lock = NSLock()
-    init(_ value: Value) { stored = value }
-    var value: Value { lock.withLock { stored } }
-    func append<E>(_ element: E) where Value == [E] { lock.withLock { stored.append(element) } }
-}

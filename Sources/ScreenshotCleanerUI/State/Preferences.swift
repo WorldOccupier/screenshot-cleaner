@@ -1,3 +1,4 @@
+import CleanerCore
 import Foundation
 
 /// Persisted user settings. Backed by `UserDefaults` so tests can use an isolated suite.
@@ -8,7 +9,7 @@ struct Preferences {
         static let lastAutoClean = "lastAutoClean"
     }
 
-    static let defaultAgeDays = 7
+    static let defaultAgeDays = AgeOption.default.days
 
     let defaults: UserDefaults
 

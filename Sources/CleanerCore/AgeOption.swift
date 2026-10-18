@@ -5,6 +5,9 @@ public enum AgeOption: Int, CaseIterable, Identifiable, Sendable {
     case week = 7
     case month = 30
 
+    /// Selected until the user picks another; also the MCP server's default when the app has no setting saved.
+    public static let `default`: AgeOption = .week
+
     public var id: Int { rawValue }
     public var days: Int { rawValue }
 

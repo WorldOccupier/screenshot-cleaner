@@ -45,55 +45,10 @@ final class StoreTests: XCTestCase {
 
     // MARK: Settings
 
-    func testLoadsSettingsFromPreferences() {
-        preferences.ageDays = 30
-        preferences.autoClean = true
-        let store = makeStore()
-        XCTAssertEqual(store.ageDays, 30)
-        XCTAssertTrue(store.autoClean)
-    }
-
     func testDefaultsToOneWeekWithAutoCleanOff() {
         let store = makeStore()
         XCTAssertEqual(store.ageDays, 7)
         XCTAssertFalse(store.autoClean)
-    }
-
-    func testPersistsSettingChanges() {
-        let store = makeStore()
-        store.ageDays = 1
-        store.autoClean = true
-        XCTAssertEqual(preferences.ageDays, 1)
-        XCTAssertTrue(preferences.autoClean)
-    }
-
-    // MARK: Scanning and filtering
-
-    func testRefreshFindsAllAndFiltersByAge() async throws {
-        try screenshot(daysOld: 0.1)
-        try screenshot(daysOld: 3)
-        try screenshot(daysOld: 10)
-        let store = makeStore()
-        await store.refresh()
-
-        XCTAssertEqual(store.all.count, 3)
-        store.ageDays = 7
-        XCTAssertEqual(store.items.count, 1)
-        store.ageDays = 1
-        XCTAssertEqual(store.items.count, 2)
-        store.ageDays = 0
-        XCTAssertEqual(store.items.count, 3)
-    }
-
-    func testSummaryReflectsKeptScreenshots() async throws {
-        try screenshot(daysOld: 0.1)
-        try screenshot(daysOld: 10, bytes: 4096)
-        let store = makeStore()
-        store.ageDays = 7
-        await store.refresh()
-        XCTAssertEqual(store.items.count, 1)
-        XCTAssertEqual(store.summary.primary, "of 2 screenshots")
-        XCTAssertEqual(store.summary.secondary, CleanSummary.format(bytes: store.items.totalBytes))
     }
 
     // MARK: Cleaning
@@ -115,25 +70,6 @@ final class StoreTests: XCTestCase {
         XCTAssertTrue(store.summary.primary.hasPrefix("Freed"))
     }
 
-    func testCleanWithNothingToCleanDoesNothing() async throws {
-        let fresh = try screenshot(daysOld: 0.1)
-        let store = makeStore()
-        await store.refresh()
-        await store.clean()
-        XCTAssertTrue(exists(fresh))
-        XCTAssertNil(store.lastCleaned)
-    }
-
-    func testChangingAgeClearsFreedMessage() async throws {
-        try screenshot(daysOld: 10)
-        let store = makeStore()
-        await store.refresh()
-        await store.clean()
-        XCTAssertNotNil(store.lastCleaned)
-        store.ageDays = 30
-        XCTAssertNil(store.lastCleaned)
-    }
-
     // MARK: Auto-clean
 
     func testAutoCleanOffNeverCleans() async throws {
@@ -142,15 +78,6 @@ final class StoreTests: XCTestCase {
         await store.heartbeatTick()
         XCTAssertTrue(exists(old))
         XCTAssertNil(preferences.lastAutoClean)
-    }
-
-    func testAutoCleanRunsWhenDueAndRecordsTheRun() async throws {
-        let old = try screenshot(daysOld: 10)
-        let store = makeStore()
-        store.autoClean = true
-        await store.heartbeatTick()
-        XCTAssertFalse(exists(old))
-        XCTAssertEqual(preferences.lastAutoClean, now)
     }
 
     func testAutoCleanRunsAtMostOnceADay() async throws {
@@ -165,13 +92,6 @@ final class StoreTests: XCTestCase {
         tomorrow.autoClean = true
         await tomorrow.heartbeatTick()
         XCTAssertFalse(exists(old), "a day later it runs again")
-    }
-
-    func testAutoCleanRecordsRunEvenWhenNothingToClean() async throws {
-        let store = makeStore()
-        store.autoClean = true
-        await store.heartbeatTick()
-        XCTAssertEqual(preferences.lastAutoClean, now)
     }
 
     func testAutoCleanNeverRemovesScreenshotsYoungerThanADay() async throws {

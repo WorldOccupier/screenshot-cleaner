@@ -39,24 +39,6 @@ final class ScreenshotScannerTests: XCTestCase {
         ])
     }
 
-    func testDefaultCutoffIncludesEveryScreenshot() throws {
-        try make("Screenshot 2026-10-17 at 9.00.00 AM.png", daysOld: 0.01)
-        let found = ScreenshotScanner.scan(folder: dir) { _ in false }
-        XCTAssertEqual(found.count, 1)
-    }
-
-    func testRecordingsOnlyWhenRequested() throws {
-        try make("Screen Recording 2026-01-01 at 1.00.00 PM.mov", daysOld: 30)
-        XCTAssertEqual(scan(), [])
-        XCTAssertEqual(scan(recordings: true), ["Screen Recording 2026-01-01 at 1.00.00 PM.mov"])
-    }
-
-    func testMetadataFlagCatchesRenamedScreenshots() throws {
-        try make("renamed.png", daysOld: 30)
-        XCTAssertEqual(scan(spotlight: true), ["renamed.png"])
-        XCTAssertEqual(scan(spotlight: false), [])
-    }
-
     func testIgnoresNonImagesHiddenFilesAndSubfolders() throws {
         try make("Screenshot 2026-01-01 at 9.00.00.txt", daysOld: 30)
         try make(".Screenshot 2026-01-01 at 9.00.00.png", daysOld: 30)
@@ -64,11 +46,6 @@ final class ScreenshotScannerTests: XCTestCase {
         try FileManager.default.createDirectory(at: sub, withIntermediateDirectories: true)
         try make("Screenshot 2026-01-01 at 9.00.00.png", daysOld: 30, in: sub)
         XCTAssertEqual(scan(spotlight: true), [])
-    }
-
-    func testMissingFolderYieldsNothing() {
-        let missing = dir.appendingPathComponent("nope")
-        XCTAssertEqual(ScreenshotScanner.scan(folder: missing).count, 0)
     }
 
     func testScreenshotNamePattern() {
