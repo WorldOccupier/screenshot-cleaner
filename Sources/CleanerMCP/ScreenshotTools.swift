@@ -25,7 +25,7 @@ public struct ScreenshotTools {
     /// The real screenshot folder, defaulting to the age picked in the app.
     public static func live() -> ScreenshotTools {
         // Bundled inside the app, the server shares its defaults; run from source, it reads the app's domain.
-        let appDomain = "com.vatsa.ScreenshotCleaner"
+        let appDomain = AppIdentity.bundleIdentifier
         let defaults = Bundle.main.bundleIdentifier == appDomain ? .standard : UserDefaults(suiteName: appDomain)
         let saved = defaults?.object(forKey: "ageDays") as? Int
         return ScreenshotTools(
@@ -125,6 +125,7 @@ public struct ScreenshotTools {
         do {
             _ = try FileManager.default.contentsOfDirectory(atPath: folder.path)
         } catch {
+            Log.mcp.error("Couldn't read \(folder.path, privacy: .private): \(error.localizedDescription, privacy: .public)")
             throw ToolError(message: "Can't read \(Report.path(folder)). Allow access in System Settings › Privacy & Security › Files and Folders for the app running this server.")
         }
         return ScreenshotScanner.scan(folder: folder, includeRecordings: includeRecordings)

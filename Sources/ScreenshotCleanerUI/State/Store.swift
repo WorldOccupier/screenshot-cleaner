@@ -58,6 +58,7 @@ public final class Store {
     }
 
     private func startMonitoring() {
+        Log.store.info("Starting with \(self.folder.path, privacy: .private)")
         watcher = FolderWatcher(url: folder) { [weak self] in
             MainActor.assumeIsolated { self?.rescan() }
         }
@@ -79,6 +80,7 @@ public final class Store {
             ScreenshotScanner.scan(folder: folder, includeRecordings: includeRecordings)
         }.value
         guard generation == scanGeneration else { return }
+        Log.store.debug("Scan found \(found.count, privacy: .public) screenshots in \(self.folder.path, privacy: .private)")
         if found != all { all = found }
     }
 
@@ -93,6 +95,7 @@ public final class Store {
         // Record the run even when there's nothing to clean, so it stays once a day.
         preferences.lastAutoClean = now()
         let batch = all.olderThan(days: AutoCleanPolicy.ageDays(forSelection: ageDays), now: now())
+        Log.store.info("Auto-clean is due: \(batch.count, privacy: .public) screenshots to move")
         await clean(batch)
     }
 
@@ -101,10 +104,12 @@ public final class Store {
     private func clean(_ batch: [Screenshot]) async {
         guard !isWorking, !batch.isEmpty else { return }
         isWorking = true
+        Log.store.info("Moving \(batch.count, privacy: .public) screenshots to the Trash")
         let remove = remove
         let result = await Task.detached(priority: .userInitiated) { Cleaner.trash(batch, using: remove) }.value
         lastCleaned = result
         isWorking = false
+        Log.store.info("Moved \(result.count, privacy: .public) screenshots (\(result.bytes, privacy: .public) bytes)")
         await refresh()
     }
 }

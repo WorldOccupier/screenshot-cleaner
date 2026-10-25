@@ -27,11 +27,17 @@ public enum ScreenshotScanner {
         includeRecordings: Bool = false,
         isScreenCapture: (URL) -> Bool = spotlightSaysScreenCapture
     ) -> [Screenshot] {
-        guard let urls = try? FileManager.default.contentsOfDirectory(
-            at: folder,
-            includingPropertiesForKeys: Array(keys),
-            options: [.skipsHiddenFiles, .skipsSubdirectoryDescendants, .skipsPackageDescendants]
-        ) else { return [] }
+        let urls: [URL]
+        do {
+            urls = try FileManager.default.contentsOfDirectory(
+                at: folder,
+                includingPropertiesForKeys: Array(keys),
+                options: [.skipsHiddenFiles, .skipsSubdirectoryDescendants, .skipsPackageDescendants]
+            )
+        } catch {
+            Log.scan.error("Couldn't read \(folder.path, privacy: .private): \(error.localizedDescription, privacy: .public)")
+            return []
+        }
 
         var result: [Screenshot] = []
         for url in urls {
@@ -45,6 +51,7 @@ public enum ScreenshotScanner {
             else { continue }
             result.append(Screenshot(url: url, created: created, bytes: Int64(values.totalFileAllocatedSize ?? 0)))
         }
+        Log.scan.debug("Found \(result.count, privacy: .public) screenshots in \(folder.path, privacy: .private)")
         return result.sorted { $0.created < $1.created }
     }
 

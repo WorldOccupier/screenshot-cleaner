@@ -1,3 +1,4 @@
+import CleanerCore
 import Foundation
 
 /// A minimal MCP server: JSON-RPC 2.0, one message per line, exposing only tools.
@@ -14,6 +15,7 @@ public final class MCPServer {
     /// Handles one incoming line. Returns the reply line, or nil when none is due (notifications, responses).
     public func handle(_ line: Data) -> Data? {
         guard let message = (try? JSONSerialization.jsonObject(with: line)) as? [String: Any] else {
+            Log.mcp.error("Parse error")
             return encode(id: NSNull(), error: .parse)
         }
         let id = message["id"]
@@ -24,8 +26,10 @@ public final class MCPServer {
         do {
             return encode(["jsonrpc": "2.0", "id": id, "result": try respond(to: method, params: message["params"] as? [String: Any] ?? [:])])
         } catch let error as RPCError {
+            Log.mcp.error("Request \(method, privacy: .public) failed: \(error.message, privacy: .public)")
             return encode(id: id, error: error)
         } catch {
+            Log.mcp.error("Request \(method, privacy: .public) failed: \(error.localizedDescription, privacy: .public)")
             return encode(id: id, error: RPCError(code: -32603, message: "\(error)"))
         }
     }
@@ -37,7 +41,7 @@ public final class MCPServer {
             return [
                 "protocolVersion": Self.supportedVersions.contains(requested) ? requested : Self.supportedVersions[0],
                 "capabilities": ["tools": [String: Any]()],
-                "serverInfo": ["name": "screenshot-cleaner", "version": "0.1.0"],
+                "serverInfo": ["name": "screenshot-cleaner", "version": AppIdentity.version],
                 "instructions": Self.instructions,
             ]
         case "ping":
@@ -47,6 +51,11 @@ public final class MCPServer {
         case "tools/call":
             guard let name = params["name"] as? String else { throw RPCError.invalidParams("Missing tool name") }
             let reply = try tools.call(name, arguments: params["arguments"] as? [String: Any] ?? [:])
+            if reply.isError {
+                Log.mcp.error("Tool \(name, privacy: .public) failed: \(reply.text, privacy: .private)")
+            } else {
+                Log.mcp.info("Tool \(name, privacy: .public) succeeded")
+            }
             return ["content": [["type": "text", "text": reply.text]], "isError": reply.isError]
         default:
             throw RPCError(code: -32601, message: "Method not found: \(method)")
