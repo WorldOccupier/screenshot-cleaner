@@ -7,6 +7,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/macOS-14%2B-111?logo=apple&logoColor=white" alt="macOS 14+">
   <img src="https://img.shields.io/badge/Swift-6-F05138?logo=swift&logoColor=white" alt="Swift 6">
+  <img src="https://github.com/WorldOccupier/screenshot-cleaner/actions/workflows/ci.yml/badge.svg" alt="CI">
   <img src="https://img.shields.io/badge/MCP-ready-1F9D6B" alt="MCP ready">
 </p>
 
@@ -26,7 +27,7 @@ Paste this into Terminal:
 curl -fsSL https://raw.githubusercontent.com/WorldOccupier/screenshot-cleaner/main/install.sh | sh
 ```
 
-It downloads the latest release into **Applications** and opens it. A stack of cards appears in your menu bar; click it, pick an age, and hit **Move to Trash**. Run it again to update. Works on Apple Silicon and Intel, macOS 14 or later.
+It downloads the latest release into **Applications**, verifies its published SHA-256 checksum, and opens it. A stack of cards appears in your menu bar; click it, pick an age, and hit **Move to Trash**. Run it again to update. Works on Apple Silicon and Intel, macOS 14 or later.
 
 <details>
 <summary><b>Prefer to download it yourself?</b></summary>
@@ -35,7 +36,7 @@ It downloads the latest release into **Applications** and opens it. A stack of c
 
 The app isn't notarized by Apple yet, so macOS blocks it when it's downloaded in a browser.
 
-1. Download [`ScreenshotCleaner.zip`](../../releases/latest/download/ScreenshotCleaner.zip), unzip it, and drag the app into **Applications**.
+1. Download [`ScreenshotCleaner.zip`](../../releases/latest/download/ScreenshotCleaner.zip), unzip it, and drag the app into **Applications**. The release also publishes `ScreenshotCleaner.zip.sha256` if you want to check the download.
 2. Open it, and click **Done** on the warning.
 3. Go to **System Settings › Privacy & Security**, scroll down, and click **Open Anyway**.
 
@@ -54,7 +55,7 @@ Requires Xcode 16.
 swift test
 ```
 
-`zip-release.sh` builds the zip that `install.sh` downloads. `release.sh` signs, notarizes and staples a DMG, once Apple notarization is available.
+`zip-release.sh` builds the zip and its `.sha256` that `install.sh` downloads; upload both to the release. `release.sh` signs, notarizes and staples a DMG, once Apple notarization is available.
 </details>
 
 ## MCP server for agents
@@ -86,3 +87,17 @@ Measured on a test Desktop with 200 screenshots over 90 days, 5 recordings and 4
 About **11× fewer tokens**. Most of the saving is the first step, where an agent reads back an `ls -la` of the whole Desktop; the server replies in one line. The gap grows with a messier Desktop. Shell matching by name and date also missed screenshots the server found through Spotlight (129 vs 132).
 
 Same detection and safety as the app: only screenshots in the macOS screenshot folder, always to the Trash. The default age, and whether recordings are included, follow what you picked in the app. Other clients can run the binary as a stdio server; from source it's `.build/release/screenshot-cleaner-mcp`.
+
+## Troubleshooting
+
+Scanning, cleaning and auto-clean are logged to the unified log. Watch them with:
+
+```sh
+log stream --predicate 'subsystem == "com.vatsa.ScreenshotCleaner"' --level debug
+```
+
+Paths and file names are marked private in the log; counts, sizes and errors are always visible. If there are screenshots on the Desktop but the app says there's nothing to clean, check **System Settings › Privacy & Security › Files and Folders** for Screenshot Cleaner.
+
+## License
+
+[MIT](LICENSE) © 2026 WorldOccupier.
