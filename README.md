@@ -55,7 +55,7 @@ Requires Xcode 16.
 swift test
 ```
 
-`zip-release.sh` builds the zip and its `.sha256` that `install.sh` downloads; upload both to the release. `release.sh` signs, notarizes and staples a DMG, once Apple notarization is available.
+`zip-release.sh` builds the zip and its `.sha256` that `install.sh` downloads; upload both to the release. `notarize-zip.sh` builds the same zip signed with Developer ID, notarized and stapled (`--upload` replaces the release's assets). `release.sh` signs, notarizes and staples a DMG.
 </details>
 
 ## MCP server for agents
