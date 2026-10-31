@@ -1,7 +1,6 @@
 #!/bin/sh
 # Installs the latest Screenshot Cleaner into Applications.
-# The app is ad-hoc signed, so it is verified against the checksum published with the release.
-# curl downloads aren't quarantined, so the app opens without notarization.
+# The app is Developer ID signed and notarized; the published checksum guards the download.
 set -eu
 
 URL="https://github.com/WorldOccupier/screenshot-cleaner/releases/latest/download/ScreenshotCleaner.zip"

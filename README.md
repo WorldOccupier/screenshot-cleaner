@@ -34,13 +34,10 @@ It downloads the latest release into **Applications**, verifies its published SH
 
 <br>
 
-The app isn't notarized by Apple yet, so macOS blocks it when it's downloaded in a browser.
+The app is signed with a Developer ID and notarized by Apple, so it opens normally.
 
 1. Download [`ScreenshotCleaner.zip`](../../releases/latest/download/ScreenshotCleaner.zip), unzip it, and drag the app into **Applications**. The release also publishes `ScreenshotCleaner.zip.sha256` if you want to check the download.
-2. Open it, and click **Done** on the warning.
-3. Go to **System Settings › Privacy & Security**, scroll down, and click **Open Anyway**.
-
-You only need to do this once. The install script avoids it because macOS only checks files downloaded through a browser.
+2. Open it.
 </details>
 
 <details>
