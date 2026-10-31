@@ -7,7 +7,7 @@ public enum AppIdentity {
     public static let bundleIdentifier = "com.vatsa.ScreenshotCleaner"
 
     /// Keep in sync with `Resources/Info.plist`; `AppIdentityTests` checks that they match.
-    public static let fallbackVersion = "0.1.1"
+    public static let fallbackVersion = "0.2.0"
 
     public static var version: String {
         let bundle = Bundle.main

@@ -10,7 +10,7 @@ struct Preferences {
         static let lastAutoClean = "lastAutoClean"
     }
 
-    static let defaultAgeDays = AgeOption.default.days
+    static let defaultAgeDays = AgeOption.default
 
     let defaults: UserDefaults
 

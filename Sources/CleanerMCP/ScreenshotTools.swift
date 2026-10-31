@@ -30,7 +30,7 @@ public struct ScreenshotTools {
         let saved = defaults?.object(forKey: "ageDays") as? Int
         return ScreenshotTools(
             folder: ScreenshotScanner.defaultLocation(),
-            defaultAgeDays: saved ?? AgeOption.default.days,
+            defaultAgeDays: saved ?? AgeOption.default,
             includeRecordings: defaults?.bool(forKey: "includeRecordings") ?? false
         )
     }

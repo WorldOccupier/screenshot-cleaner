@@ -14,7 +14,7 @@
 <p align="center"><img src="docs/screenshot.png" width="412" alt="Screenshot Cleaner popover"></p>
 
 - **Finds screenshots** in the folder macOS saves them to (Desktop by default), and nothing else.
-- **Pick an age** (any, 1 day, 1 week, 1 month) and flick through the stack to see what will go.
+- **Pick an age** (any age, or drag the field to 1–30 days) and flick through the stack to see what will go.
 - **Move to Trash** in one click. Files are never deleted outright, so anything can be restored.
 - **Auto-clean** once a day, if you turn it on. It never touches screenshots from the last 24 hours.
 - **Screen recordings** too, if you flip the Recordings switch. Off by default.
@@ -27,7 +27,7 @@ Paste this into Terminal:
 curl -fsSL https://raw.githubusercontent.com/WorldOccupier/screenshot-cleaner/main/install.sh | sh
 ```
 
-It downloads the latest release into **Applications**, verifies its published SHA-256 checksum, and opens it. A stack of cards appears in your menu bar; click it, pick an age, and hit **Move to Trash**. Run it again to update. Works on Apple Silicon and Intel, macOS 14 or later.
+It downloads the latest release into **Applications**, verifies its published SHA-256 checksum, and opens it. A stack of cards appears in your menu bar; click it, drag the age field, and hit **Move to Trash**. Run it again to update. Works on Apple Silicon and Intel, macOS 14 or later.
 
 <details>
 <summary><b>Prefer to download it yourself?</b></summary>

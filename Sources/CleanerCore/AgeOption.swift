@@ -1,23 +1,13 @@
-/// The age choices offered in the popover.
-public enum AgeOption: Int, CaseIterable, Identifiable, Sendable {
-    case all = 0
-    case day = 1
-    case week = 7
-    case month = 30
+/// The age range offered in the popover.
+public enum AgeOption {
+    /// Selected until the user drags the field; also the MCP server's default when the app has no setting saved.
+    public static let `default` = 7
+    public static let minimumDays = 1
+    public static let maximumDays = 30
 
-    /// Selected until the user picks another; also the MCP server's default when the app has no setting saved.
-    public static let `default`: AgeOption = .week
-
-    public var id: Int { rawValue }
-    public var days: Int { rawValue }
-
-    public var label: String {
-        switch self {
-        case .all: "All"
-        case .day: "1d"
-        case .week: "1w"
-        case .month: "1m"
-        }
+    /// Clamps a day count to the picker's 1…30 range.
+    public static func clamp(_ days: Int) -> Int {
+        min(max(days, minimumDays), maximumDays)
     }
 
     /// Lead-in shown beside the picker for a given selection.
